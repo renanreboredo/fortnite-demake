@@ -1,4 +1,1 @@
-10 Shotgun
-5 Pistol
 20 Rifle
-2 Melee
