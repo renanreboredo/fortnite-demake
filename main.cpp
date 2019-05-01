@@ -29,12 +29,12 @@
 #define WEAPON_TYPES 4
 #define NAMES 50
 #define WEAPON_TYPE_NAME_SIZE 30
-#define PLAYERS 2
-#define ARENA_ENTRIES 5
+#define PLAYERS 10
+#define ARENA_ENTRIES 10
 #define TOTENS 1
 #define WEAPON_MAX 10
-#define SLEEP_TIME 0
-#define LIFE_TOTAL 0
+#define SLEEP_TIME 2
+#define LIFE_TOTAL 50
 #define BARRIERS (PLAYERS)
 
 #define enum { FALSE, TRUE }
@@ -106,7 +106,7 @@ void * spawn_weapons(void * args) {
 
   while ( game_ended == FALSE ) {
 
-    if (sem_trywait(&weapon_totem_max) == 0) {
+    if(sem_trywait(&weapon_totem_max)) {
       weapon.id = id++;
       pthread_mutex_lock(&weapon_types_lock);
       weapon.type = weapon_types[ rand() % (WEAPON_TYPES) ];
@@ -191,12 +191,6 @@ void * spawn_players(void * args) {
       pthread_mutex_unlock(&window_lock);
       sleep(SLEEP_TIME / 2);
       game_ended = TRUE;
-    /* } else if (players_count == 0) { */
-    /*   pthread_mutex_lock(&window_lock); */
-    /*   std::cout << RED << "Everybody died. It's a tie\n" << RESET; */
-    /*   pthread_mutex_unlock(&window_lock); */
-    /*   sleep(SLEEP_TIME / 2); */
-    /*   game_ended = TRUE; */
     } else {
       players_count--;
       pthread_mutex_lock(&window_lock);
@@ -208,10 +202,6 @@ void * spawn_players(void * args) {
 
     sem_post(&arena);
     player.inArena = FALSE;
-
-    /* pthread_mutex_lock(&players_counter_lock); */
-    /* players_count--; */
-    /* pthread_mutex_unlock(&players_counter_lock); */
 
     pthread_barrier_wait(&end_game);
     pthread_exit(0);
@@ -287,7 +277,7 @@ int shoot(Player player) {
   }
 
   pthread_mutex_lock(&window_lock);
-  std::cout << MAGENTA << player.name << " missed the target\n" << RESET;
+  std::cout << WHITE << player.name << " missed the target\n" << RESET;
   pthread_mutex_unlock(&window_lock);
   sleep(SLEEP_TIME / 2);
 
@@ -394,7 +384,6 @@ int main(int argc, char *argv[])
       pthread_mutex_unlock(&window_lock);
       sleep(SLEEP_TIME / 2);
       game_ended = TRUE;
-      pthread_mutex_unlock(&players_counter_lock);
       break;
     } else if ( game_ended == TRUE ) {
       break;

@@ -1,1 +1,4 @@
 20 Rifle
+10 Shotgun
+5 Pistol
+2 Shovel
